@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <title>Plastic Waste Dashboard & Risk Prediction</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <!-- Leaflet Fullscreen CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-fullscreen@latest/dist/leaflet.fullscreen.css" />
+
+  <!-- Custom CSS -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
+</head>
+<body>
+
+<div class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mb-5">
+    <h1 class="text-center mb-0 fw-bold text-gradient"><span class="no-gradient">🌍</span> Global Plastic Waste Dashboard 2023</h1>
+    <button id="darkModeToggle" class="btn neumorphic-btn" aria-label="Toggle dark mode">
+      <span class="light-icon">🌞</span>
+      <span class="dark-icon">🌙</span>
+    </button>
+  </div>
+
+  <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active text-uppercase fw-semibold fs-6" id="visualization-tab" data-bs-toggle="tab" data-bs-target="#visualization" type="button" role="tab" aria-controls="visualization" aria-selected="true">Visualization</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link text-uppercase fw-semibold fs-6" id="prediction-tab" data-bs-toggle="tab" data-bs-target="#prediction" type="button" role="tab" aria-controls="prediction" aria-selected="false">Prediction</button>
+    </li>
+  </ul>
+
+  <div class="tab-content pt-4" id="mainTabsContent">
+
+    <!-- Visualization Tab -->
+    <div class="tab-pane fade show active" id="visualization" role="tabpanel" aria-labelledby="visualization-tab">
+
+      <div class="row gx-4 mb-4">
+        <div class="col-lg-3">
+          <div class="card shadow filter-card p-4 rounded-4">
+            <h5 class="mb-3 fw-bold">Filters <i class="bi bi-funnel-fill" title="Filter your data"></i></h5>
+
+            <div class="mb-4" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter by Coastal Waste Risk">
+              <label for="riskFilter" class="form-label fw-semibold">Coastal Waste Risk</label>
+              <select id="riskFilter" class="form-select neumorphic-input" aria-label="Filter by Coastal Waste Risk">
+                <option value="All" selected>All</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+
+            <div class="mb-4" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter by Main Source of Waste">
+              <label for="sourceFilter" class="form-label fw-semibold">Main Source</label>
+              <select id="sourceFilter" class="form-select neumorphic-input" aria-label="Filter by Main Source">
+                <option value="All" selected>All</option>
+              </select>
+            </div>
+
+            <div class="mb-4" data-bs-toggle="tooltip" data-bs-placement="right" title="Maximum recycling rate %">
+              <label for="recyclingRateFilter" class="form-label fw-semibold">
+                Max Recycling Rate (%): <span id="recyclingRateValue">100%</span>
+              </label>
+              <input type="range" class="form-range neumorphic-input" min="0" max="100" step="1" id="recyclingRateFilter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" value="100" />
+            </div>
+
+            <div class="mb-4" data-bs-toggle="tooltip" data-bs-placement="right" title="Maximum total plastic waste in million tonnes">
+              <label for="totalWasteFilter" class="form-label fw-semibold">
+                Max Total Plastic Waste (MT): <span id="totalWasteValue">500</span>
+              </label>
+              <input type="range" class="form-range neumorphic-input" min="0" max="500" step="5" id="totalWasteFilter" aria-valuemin="0" aria-valuemax="500" aria-valuenow="500" value="500" />
+            </div>
+            
+            <button id="clearFiltersBtn" class="btn btn-outline-secondary neumorphic-btn w-100">Clear Filters</button>
+
+          </div>
+
+          <div class="card shadow legend-card p-4 rounded-4 mt-4">
+            <h6 class="fw-semibold mb-3 text-center">Risk Legend</h6>
+            <div class="d-flex align-items-center justify-content-center mb-2">
+              <div class="legend-box high"></div>
+              <span class="ms-2 fw-semibold text-danger">High Risk</span>
+            </div>
+            <div class="d-flex align-items-center justify-content-center mb-2">
+              <div class="legend-box medium"></div>
+              <span class="ms-2 fw-semibold text-warning">Medium Risk</span>
+            </div>
+            <div class="d-flex align-items-center justify-content-center">
+              <div class="legend-box low"></div>
+              <span class="ms-2 fw-semibold text-success">Low Risk</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-9">
+          <div class="row gx-4 mb-4" id="summary-cards">
+            <div class="col-md-4">
+              <div class="card neumorphic-card text-center p-4 summary-card">
+                <h6 class="fw-semibold text-secondary" data-bs-toggle="tooltip" title="Sum of Total Plastic Waste">🥤Total Plastic Waste (MT)</h6>
+                <h3 class="mt-2 text-primary" id="totalWasteSum">-</h3>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card neumorphic-card text-center p-4 summary-card">
+                <h6 class="fw-semibold text-secondary" data-bs-toggle="tooltip" title="Average Recycling Rate">♻️Avg. Recycling Rate (%)</h6>
+                <h3 class="mt-2 text-success" id="avgRecyclingRate">-</h3>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card neumorphic-card text-center p-4 summary-card">
+                <h6 class="fw-semibold text-secondary" data-bs-toggle="tooltip" title="Average Per Capita Waste">🚮Avg. Per Capita Waste (KG)</h6>
+                <h3 class="mt-2 text-warning" id="avgPerCapitaWaste">-</h3>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow p-4 mb-4 rounded-4" id="country-bar-card">
+            <h5 class="mb-3 fw-semibold">Total Plastic Waste by Country</h5>
+            <div id="chart-country-bar" style="height: 420px;"></div>
+          </div>
+
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
+                <h6 class="mb-3 fw-semibold">Per Capita Waste vs Recycling Rate (Bubble size = Total waste)</h6>
+                <div id="chart-bubble" style="height: 360px;"></div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
+                <h6 class="mb-3 fw-semibold">Recycling Rate Distribution by Risk</h6>
+                <div id="chart-violin" style="height: 360px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Sources Pie Chart -->
+          <div class="card shadow p-4 neumorphic-card mt-4 rounded-4">
+            <h5 class="mb-3 fw-semibold">Plastic Waste by Main Source</h5>
+            <div id="chart-main-source-pie" style="height: 420px;"></div>
+          </div>
+
+          <!-- Treemap -->
+          <div class="card shadow p-4 neumorphic-card mt-4 rounded-4">
+            <h5 class="mb-3 fw-semibold">Waste Distribution by Main Source and Risk</h5>
+            <div id="chart-treemap" style="height: 450px;"></div>
+          </div>
+
+          <!-- Anomaly Detection -->
+          <div class="card shadow p-4 neumorphic-card mt-4 rounded-4">
+            <h5 class="mb-3 fw-semibold">Anomaly Detection</h5>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <select id="anomalyMetric" class="form-select neumorphic-input">
+                  <option value="Total_Plastic_Waste_MT">Total Plastic Waste</option>
+                  <option value="Recycling_Rate">Recycling Rate</option>
+                  <option value="Per_Capita_Waste_KG">Per Capita Waste</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="anomalyThreshold" class="form-label">Sensitivity: <span id="thresholdValue">2.0</span>σ</label>
+                  <input type="range" class="form-range neumorphic-input" id="anomalyThreshold" min="1" max="3" step="0.1" value="2.0">
+                </div>
+              </div>
+            </div>
+            <div id="chart-anomaly" style="height: 400px;"></div>
+            <div id="anomalyList" class="mt-3">
+              <h6 class="fw-semibold mb-2">Detected Anomalies:</h6>
+              <div class="list-group" id="anomalyItems"></div>
+            </div>
+          </div>
+
+          <div class="card shadow p-3 neumorphic-card mt-4 rounded-4">
+            <h5 class="mb-3 fw-semibold">Plastic Waste Risk Map</h5>
+            <div id="map" style="height: 480px; border-radius: 12px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prediction Tab -->
+    <div class="tab-pane fade" id="prediction" role="tabpanel" aria-labelledby="prediction-tab">
+      <div class="card shadow p-5 mx-auto neumorphic-card" style="max-width: 550px;">
+        <h3 class="mb-5 text-center fw-bold">Predict Coastal Waste Risk</h3>
+        <form id="predict-form" novalidate autocomplete="off" class="d-flex flex-column gap-4">
+          <input type="number" class="form-control neumorphic-input" placeholder="Total Plastic Waste (Million Tonnes)" step="0.01" min="0" id="Total_Plastic_Waste_MT" required aria-required="true" />
+          <select class="form-select neumorphic-input" id="Main_Sources" required aria-required="true">
+            {% for source in main_sources %}
+            <option value="{{ source }}">{{ source.replace('_', ' ') }}</option>
+            {% endfor %}
+          </select>
+          <input type="number" class="form-control neumorphic-input" placeholder="Recycling Rate (%)" step="0.1" min="0" max="100" id="Recycling_Rate" required aria-required="true" />
+          <input type="number" class="form-control neumorphic-input" placeholder="Per Capita Waste (KG)" step="0.01" min="0" id="Per_Capita_Waste_KG" required aria-required="true" />
+
+          <div class="d-flex gap-3">
+            <button type="button" id="clearBtn" class="btn btn-outline-secondary neumorphic-btn flex-grow-1">Clear</button>
+            <button type="submit" class="btn btn-primary neumorphic-btn flex-grow-1 position-relative" id="predictBtn">
+              <span class="btn-text">Predict Risk</span>
+              <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+            </button>
+          </div>
+        </form>
+        <div id="result" class="mt-5 text-center neumorphic-result"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- JS dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- Leaflet Fullscreen JS -->
+<script src="https://unpkg.com/leaflet-fullscreen@latest/dist/Leaflet.fullscreen.min.js"></script>
+
+<!-- Custom JS -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>
