@@ -4,9 +4,9 @@ import joblib
 
 app = Flask(__name__)
 
-df = pd.read_csv('data/Plastic Waste Around the World.csv')
-model_pipeline = joblib.load('best_model_pipeline.pkl')
-le_target = joblib.load('le_coastal_risk.pkl')
+df = pd.read_csv('Plastic-waste-web/data/Plastic Waste Around the World.csv')
+model_pipeline = joblib.load('Plastic-waste-web/best_model_pipeline.pkl')
+le_target = joblib.load('Plastic-waste-web/le_coastal_risk.pkl')
 
 @app.route('/')
 def index():
