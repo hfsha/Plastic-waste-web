@@ -98,10 +98,10 @@ An interactive web dashboard that visualizes global plastic waste data and predi
 ## 📸 Demo
 
 ### Dashboard Interface
-![Dashboard Interface](path_to_dashboard_screenshot.png)
+![image](https://github.com/user-attachments/assets/c0c7f075-fb43-46c9-8e3e-c831cb8737a2)
 
 ### Risk Prediction
-![Risk Prediction](path_to_prediction_screenshot.png)
+![image](https://github.com/user-attachments/assets/39f5238c-b447-4dd3-83a9-f96ae3c9cc63)
 
 ### Interactive Maps
 ![Interactive Maps](path_to_map_screenshot.png)
