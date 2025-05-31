@@ -32,7 +32,7 @@ An interactive web dashboard that visualizes global plastic waste data and predi
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/Plastic-waste-web.git
+   git clone https://github.com/hfsha/Plastic-waste-web.git
    cd Plastic-waste-web
    ```
 
@@ -142,7 +142,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
  Name - [Shahidatul Hidayah]
 
-Project Link: [https://github.com/hfsha/Plastic-waste-web](https://github.com/yourusername/Plastic-waste-web)
+Project Link: [https://github.com/hfsha/Plastic-waste-web](https://github.com/hfsha/Plastic-waste-web)
 
 ---
 
