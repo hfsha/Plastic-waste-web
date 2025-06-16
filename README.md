@@ -32,7 +32,7 @@ An interactive web dashboard that visualizes global plastic waste data and predi
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/Plastic-waste-web.git
+   git clone https://github.com/hfsha/Plastic-waste-web.git
    cd Plastic-waste-web
    ```
 
@@ -104,9 +104,11 @@ An interactive web dashboard that visualizes global plastic waste data and predi
 ![image](https://github.com/user-attachments/assets/39f5238c-b447-4dd3-83a9-f96ae3c9cc63)
 
 ### Interactive Maps
-![Interactive Maps](path_to_map_screenshot.png)
+![image](https://github.com/user-attachments/assets/15aa7b1a-da1a-4ce9-809a-0c8ce884f12c)
 
-*Note: Replace the image paths with actual screenshots of your application*
+
+### YouTube Link
+(https://youtu.be/w0nnG1O8Gb8?si=2kW9Y0QHbQNckKMb)
 
 ## 🧠 Machine Learning Model
 
@@ -140,7 +142,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
  Name - [Shahidatul Hidayah]
 
-Project Link: [https://github.com/hfsha/Plastic-waste-web](https://github.com/yourusername/Plastic-waste-web)
+Project Link: [https://github.com/hfsha/Plastic-waste-web](https://github.com/hfsha/Plastic-waste-web)
 
 ---
 
