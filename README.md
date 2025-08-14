@@ -1,4 +1,4 @@
-# 🌍 Global Plastic Waste Dashboard & Risk PredictionAdd commentMore actions
+# 🌍 Global Plastic Waste Dashboard & Risk Prediction
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-2.0%2B-lightgrey)](https://flask.palletsprojects.com/)
